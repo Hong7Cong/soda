@@ -35,8 +35,8 @@ def init_seeds(RANDOM_SEED=1337, no=0):
 
 def reduce_tensor(tensor):
     rt = tensor.clone()
-    dist.all_reduce(rt, op=dist.ReduceOp.SUM)
-    rt /= dist.get_world_size()
+    # dist.all_reduce(rt, op=dist.ReduceOp.SUM)
+    # rt /= dist.get_world_size()
     return rt
 
 
@@ -44,11 +44,12 @@ def gather_tensor(tensor):
     tensor_list = [tensor.clone() for _ in range(dist.get_world_size())]
     dist.all_gather(tensor_list, tensor)
     tensor_list = torch.cat(tensor_list, dim=0)
-    return tensor_list
+    return tensor
 
 
 def DataLoaderDDP(dataset, batch_size, shuffle=True):
-    sampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=shuffle)
+    # sampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=shuffle)
+    sampler = None
     dataloader = DataLoader(
         dataset,
         batch_size=batch_size,

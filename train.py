@@ -16,7 +16,9 @@ from model.encoder import Network
 from model.decoder import UNet_decoder
 from utils import Config, get_optimizer, init_seeds, reduce_tensor, DataLoaderDDP, print0
 from datasets import get_dataset
-
+# import os
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def train(opt):
     yaml_path = opt.config
@@ -34,7 +36,7 @@ def train(opt):
         os.makedirs(model_dir, exist_ok=True)
         os.makedirs(vis_dir, exist_ok=True)
 
-    device = "cuda:%d" % local_rank
+    device = device = torch.device('cuda:0') #"cuda:%d" % local_rank
     soda = SODA(encoder=Network(**opt.encoder),
                 decoder=UNet_decoder(**opt.decoder),
                 **opt.diffusion,
@@ -46,10 +48,11 @@ def train(opt):
         ema.eval()
         writer = SummaryWriter(log_dir=tsbd_dir)
 
-    soda = torch.nn.SyncBatchNorm.convert_sync_batchnorm(soda)
-    soda = torch.nn.parallel.DistributedDataParallel(
-        soda, device_ids=[local_rank], output_device=local_rank)
-
+    # soda = torch.nn.SyncBatchNorm.convert_sync_batchnorm(soda)
+    # soda = torch.nn.parallel.DistributedDataParallel(
+    #     soda, device_ids=[local_rank], output_device=local_rank)
+    # device = 'cuda'
+    # soda = soda.to(device)
     num_classes, train, down_train, down_test = get_dataset(name=opt.dataset, root="./data")
 
     # cluster configs
@@ -62,11 +65,12 @@ def train(opt):
                                           shuffle=True)
 
     lr = opt.lrate
-    DDP_multiplier = dist.get_world_size()
-    print0("Using DDP, lr = %f * %d" % (lr, DDP_multiplier))
-    lr *= DDP_multiplier
-    optim = get_optimizer([{'params': soda.module.encoder.parameters(), 'lr': lr * opt.lrate_ratio},
-                           {'params': soda.module.decoder.parameters(), 'lr': lr}], opt, lr=0)
+    # DDP_multiplier = dist.get_world_size()
+    # print0("Using DDP, lr = %f * %d" % (lr, DDP_multiplier))
+    # lr *= DDP_multiplier
+    # print(soda.module)
+    optim = get_optimizer([{'params': soda.encoder.parameters(), 'lr': lr * opt.lrate_ratio},
+                           {'params': soda.decoder.parameters(), 'lr': lr}], opt, lr=0)
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
     if opt.load_epoch != -1:
@@ -81,8 +85,8 @@ def train(opt):
     for ep in range(opt.load_epoch + 1, opt.n_epoch):
         optim.param_groups[1]['lr'] = lr * min((ep + 1.0) / opt.warm_epoch, 1.0) # warmup
         optim.param_groups[0]['lr'] = optim.param_groups[1]['lr'] * opt.lrate_ratio
-        sampler.set_epoch(ep)
-        dist.barrier()
+        # sampler.set_epoch(ep)
+        # dist.barrier()
         # training
         soda.train()
         if local_rank == 0:
@@ -105,7 +109,7 @@ def train(opt):
             scaler.update()
 
             # logging
-            dist.barrier()
+            # dist.barrier()
             loss = reduce_tensor(loss)
             if local_rank == 0:
                 ema.update()
@@ -168,7 +172,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     print0(opt)
 
-    init_seeds(no=opt.local_rank)
-    dist.init_process_group(backend='nccl')
-    torch.cuda.set_device(opt.local_rank)
+    # init_seeds(no=opt.local_rank)
+    # dist.init_process_group(backend='nccl')
+    # torch.cuda.set_device(opt.local_rank)
     train(opt)
