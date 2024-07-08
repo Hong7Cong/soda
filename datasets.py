@@ -167,7 +167,7 @@ def get_dataset(name='cifar10', root='data'):
         data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
         NUM_CLASSES = 2
         DATASET = FundusDataset
-        RES = 64
+        RES = 32
     else:
         raise NotImplementedError
 
