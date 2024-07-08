@@ -132,7 +132,7 @@ class FundusDataset(Dataset):
                                 self.data.append(item)
         # self.labels_dict = {i: classes[i] for i in range(len(classes))}
         self.labels_dict = {0: 'glaucoma'}
-        
+
     def __len__(self):
         return len(self.data)
 
@@ -167,7 +167,7 @@ def get_dataset(name='cifar10', root='data'):
         data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
         NUM_CLASSES = 2
         DATASET = FundusDataset
-        RES = 128
+        RES = 64
     else:
         raise NotImplementedError
 
