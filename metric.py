@@ -8,7 +8,7 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.neighbors import KNeighborsClassifier
 
 from torchvision.datasets import CIFAR10, CIFAR100
-from datasets import TinyImageNet
+from datasets import TinyImageNet, FundusDataset
 
 class FeatureDataset(Dataset):
     def __init__(self, dataset):
@@ -16,7 +16,7 @@ class FeatureDataset(Dataset):
         self.feature = None
         if isinstance(self.set, CIFAR10) or isinstance(self.set, CIFAR100):
             self.gt = np.array(self.set.targets)
-        elif isinstance(self.set, TinyImageNet):
+        elif isinstance(self.set, TinyImageNet) or isinstance(self.set, FundusDataset):
             self.gt = np.array([label for _, label in self.set.data])
         else:
             raise NotImplementedError
