@@ -53,7 +53,7 @@ def train(opt):
     #     soda, device_ids=[local_rank], output_device=local_rank)
     # device = 'cuda'
     # soda = soda.to(device)
-    num_classes, train, down_train, down_test = get_dataset(name=opt.dataset, root="./data")
+    num_classes, train, down_train, down_test = get_dataset(name=opt.dataset, root="/kaggle/input/glaucoma-private")
 
     # cluster configs
     if local_rank == 0:
