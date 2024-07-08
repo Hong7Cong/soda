@@ -106,6 +106,45 @@ class AddGaussianNoise():
             out = out.to(dtype)
         return out
 
+class FundusDataset(Dataset):
+    def __init__(self, root, train=True, transform=None):
+        
+        if not root.endswith("fundus"):
+            root = os.path.join(root, "fundus")
+        self.train_dir = os.path.join(root, "train")
+        self.val_dir = os.path.join(root, "val")
+        self.transform = transform
+        self._scan_train_val()
+
+    def _scan_train_val(self):
+        classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
+        print(classes)
+        classes = sorted(classes)
+        assert len(classes) == 2
+        self.data = []
+        for idx, name in enumerate(classes):
+            this_dir = os.path.join(self.train_dir, name)
+            for root, _, files in sorted(os.walk(this_dir)):
+                for fname in sorted(files):
+                    if fname.endswith(".jpg"):
+                        path = os.path.join(root, fname)
+                        item = (path, idx)
+                        self.data.append(item)
+        self.labels_dict = {i: classes[i] for i in range(len(classes))}
+        
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        path, label = self.data[idx]
+        image = Image.open(path)
+        image = image.convert("RGB")
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
 
 def get_dataset(name='cifar10', root='data'):
     if name == 'cifar10':
@@ -123,6 +162,11 @@ def get_dataset(name='cifar10', root='data'):
         NUM_CLASSES = 200
         DATASET = TinyImageNet
         RES = 64
+    elif name == 'fundus':
+        data_norm = transforms.Normalize([0.4914, 0.4822, 0.4465], [0.2023, 0.1994, 0.2010])
+        NUM_CLASSES = 2
+        DATASET = FundusDataset
+        RES = 32
     else:
         raise NotImplementedError
 
