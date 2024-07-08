@@ -108,7 +108,6 @@ class AddGaussianNoise():
 
 class FundusDataset(Dataset):
     def __init__(self, root, train=True, transform=None):
-        
         if not root.endswith("fundus"):
             root = os.path.join(root, "fundus")
         self.train_dir = os.path.join(root, "train")
@@ -118,7 +117,6 @@ class FundusDataset(Dataset):
 
     def _scan_train_val(self):
         classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
-        print(classes)
         classes = sorted(classes)
         assert len(classes) == 2
         self.data = []
@@ -163,50 +161,93 @@ def get_dataset(name='cifar10', root='data'):
         DATASET = TinyImageNet
         RES = 64
     elif name == 'fundus':
-        data_norm = transforms.Normalize([0.4914, 0.4822, 0.4465], [0.2023, 0.1994, 0.2010])
+        data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
         NUM_CLASSES = 2
         DATASET = FundusDataset
         RES = 32
     else:
         raise NotImplementedError
 
-    # for resnet encoder, at the training
-    source_transform = transforms.Compose([
-        transforms.RandomApply([
-            transforms.RandomResizedCrop(RES),
-            transforms.RandomHorizontalFlip(),
-        ], p=0.95),
-        transforms.RandomApply([
-            transforms.RandAugment(),
-        ], p=0.65),
-        transforms.ToTensor(),
-        data_norm,
-        AddGaussianNoise(),
-    ])
-    # for unet decoder, at the training
-    target_transform = transforms.Compose([
-        transforms.RandomApply([
-            transforms.RandomResizedCrop(RES),
-            transforms.RandomHorizontalFlip(),
-        ], p=0.95),
-        transforms.RandomApply([
-            transforms.RandAugment(),
-        ], p=0.65),
-        transforms.ToTensor(),
-    ])
-    # for resnet encoder, for evaluation
-    downstream_transform_train = transforms.Compose([
-        transforms.RandomApply([
-            transforms.RandomResizedCrop(RES),
-            transforms.RandomHorizontalFlip(),
-        ], p=0.65),
-        transforms.ToTensor(),
-        data_norm,
-    ])
-    downstream_transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        data_norm,
-    ])
+    if name == 'fundus':
+        source_transform = transforms.Compose([
+            transforms.Resize(RES),
+            transforms.RandomApply([
+                # transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.95),
+            transforms.RandomApply([
+                transforms.RandAugment(),
+            ], p=0.65),
+            transforms.ToTensor(),
+            data_norm,
+            AddGaussianNoise(),
+        ])
+        # for unet decoder, at the training
+        target_transform = transforms.Compose([
+            transforms.Resize(RES),
+            transforms.RandomApply([
+                # transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.95),
+            transforms.RandomApply([
+                transforms.RandAugment(),
+            ], p=0.65),
+            transforms.ToTensor(),
+        ])
+        # for resnet encoder, for evaluation
+        downstream_transform_train = transforms.Compose([
+            transforms.Resize(RES),
+            transforms.RandomApply([
+                # transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.65),
+            transforms.ToTensor(),
+            data_norm,
+        ])
+        downstream_transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            data_norm,
+        ])
+
+    else:
+        # for resnet encoder, at the training
+        source_transform = transforms.Compose([
+            transforms.RandomApply([
+                transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.95),
+            transforms.RandomApply([
+                transforms.RandAugment(),
+            ], p=0.65),
+            transforms.ToTensor(),
+            data_norm,
+            AddGaussianNoise(),
+        ])
+        # for unet decoder, at the training
+        target_transform = transforms.Compose([
+            transforms.RandomApply([
+                transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.95),
+            transforms.RandomApply([
+                transforms.RandAugment(),
+            ], p=0.65),
+            transforms.ToTensor(),
+        ])
+        # for resnet encoder, for evaluation
+        downstream_transform_train = transforms.Compose([
+            transforms.RandomApply([
+                transforms.RandomResizedCrop(RES),
+                transforms.RandomHorizontalFlip(),
+            ], p=0.65),
+            transforms.ToTensor(),
+            data_norm,
+        ])
+        downstream_transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            data_norm,
+        ])
+
 
     train_source = DATASET(root=root, train=True, transform=source_transform)
     train_target = DATASET(root=root, train=True, transform=target_transform)
