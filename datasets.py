@@ -120,15 +120,18 @@ class FundusDataset(Dataset):
         classes = sorted(classes)
         assert len(classes) == 2
         self.data = []
+
         for idx, name in enumerate(classes):
             this_dir = os.path.join(self.train_dir, name)
             for root, _, files in sorted(os.walk(this_dir)):
                 for fname in sorted(files):
                     if fname.endswith(".jpg"):
-                        path = os.path.join(root, fname)
-                        item = (path, idx)
-                        self.data.append(item)
-        self.labels_dict = {i: classes[i] for i in range(len(classes))}
+                            if name == "glaucoma":
+                                path = os.path.join(root, fname)
+                                item = (path, idx)
+                                self.data.append(item)
+        # self.labels_dict = {i: classes[i] for i in range(len(classes))}
+        self.labels_dict = {0: 'glaucoma'}
         
     def __len__(self):
         return len(self.data)
