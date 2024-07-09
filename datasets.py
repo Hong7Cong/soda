@@ -127,7 +127,7 @@ class FundusDataset(Dataset):
                 for fname in sorted(files):
                     if fname.endswith(".jpg"):
                         if name == 'glaucoma':
-                              path = os.path.join(root, fname)
+                            path = os.path.join(root, fname)
                             item = (path, idx)
                             self.data.append(item)
                         # path = os.path.join(root, fname)
