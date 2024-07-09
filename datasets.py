@@ -165,7 +165,7 @@ def get_dataset(name='cifar10', root='data'):
         RES = 64
     elif name == 'fundus':
         data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
-        NUM_CLASSES = 2
+        NUM_CLASSES = 1
         DATASET = FundusDataset
         RES = 32
     else:
