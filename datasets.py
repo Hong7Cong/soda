@@ -126,10 +126,15 @@ class FundusDataset(Dataset):
             for root, _, files in sorted(os.walk(this_dir)):
                 for fname in sorted(files):
                     if fname.endswith(".jpg"):
-                        path = os.path.join(root, fname)
-                        item = (path, idx)
-                        self.data.append(item)
-        self.labels_dict = {i: classes[i] for i in range(len(classes))}
+                        if name == 'glaucoma':
+                              path = os.path.join(root, fname)
+                            item = (path, idx)
+                            self.data.append(item)
+                        # path = os.path.join(root, fname)
+                        # item = (path, idx)
+                        # self.data.append(item)
+        self.labels_dict = {0: 'glaucoma'}
+        # self.labels_dict = {i: classes[i] for i in range(len(classes))}
         
         
     def __len__(self):
@@ -164,7 +169,7 @@ def get_dataset(name='cifar10', root='data'):
         RES = 64
     elif name == 'fundus':
         data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
-        NUM_CLASSES = 2
+        NUM_CLASSES = 1
         DATASET = FundusDataset
         RES = 32
     else:
