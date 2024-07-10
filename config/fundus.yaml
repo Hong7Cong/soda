@@ -33,7 +33,7 @@ optim_args:
   betas: [0.9, 0.95]
 grad_clip_norm: 1
 
-n_epoch: 10
+n_epoch: 100
 warm_epoch: 20
 load_epoch: -1
 ema: 0.9999
