@@ -126,7 +126,7 @@ class FundusDataset(Dataset):
         class_to_idx = {classes[i]: i for i in range(len(classes))}
         self.data = []
         for fname, class_name in self.file_to_class.items():
-            path = os.path.join(images_dir, class_name, fname)
+            path = os.path.join(self.val_dir, class_name, fname)
             idx = class_to_idx[class_name]
             item = (path, idx)
             self.data.append(item)
