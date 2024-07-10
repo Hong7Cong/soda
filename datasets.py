@@ -207,7 +207,6 @@ def get_dataset(name='cifar10', root='data'):
             data_norm,
         ])
         downstream_transform_test = transforms.Compose([
-            transforms.Resize(RES),
             transforms.ToTensor(),
             data_norm,
         ])
