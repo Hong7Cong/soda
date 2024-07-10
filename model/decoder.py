@@ -56,21 +56,26 @@ class ResidualBlock(nn.Module):
         * `t` has shape `[batch_size, time_channels]`
         * `z` has shape `[batch_size, z_channels]`
         """
-        if self.updown:
-            h = self.norm2(self.conv1(self.h_upd(self.act1(self.norm1(x)))))
-            x = self.x_upd(x)
-        else:
-            h = self.norm2(self.conv1(self.act1(self.norm1(x))))
-
-        # Adaptive Group Normalization
-        t_s, t_b = self.time_emb(t).chunk(2, dim=1)
-        z_s, z_b = self.z_emb(z).chunk(2, dim=1)
-        h = t_s[:, :, None, None] * h + t_b[:, :, None, None]
-        h = z_s[:, :, None, None] * h + z_b[:, :, None, None]
-
-        h = self.conv2(self.act2(h))
-        return h + self.shortcut(x)
-
+        try:
+            if self.updown:
+                h = self.norm2(self.conv1(self.h_upd(self.act1(self.norm1(x)))))
+                x = self.x_upd(x)
+            else:
+                h = self.norm2(self.conv1(self.act1(self.norm1(x))))
+    
+            # Adaptive Group Normalization
+            t_s, t_b = self.time_emb(t).chunk(2, dim=1)
+            z_s, z_b = self.z_emb(z).chunk(2, dim=1)
+          
+            h = t_s[:, :, None, None] * h + t_b[:, :, None, None]
+            h = z_s[:, :, None, None] * h + z_b[:, :, None, None]
+    
+            h = self.conv2(self.act2(h))
+            return h + self.shortcut(x)
+         except Exception as e:
+            print(f"Error in ResidualBlock forward: {e}, Input dimensions: x={x.size()}, t={t.size()}, z={z.size()}")
+            print(f"z_s shape: {z_s.shape}, z_b shape: {z_b.shape}")
+            raise e
 
 class ResAttBlock(nn.Module):
     def __init__(self, in_channels, out_channels, time_channels, z_channels, has_attn, attn_channels_per_head, dropout):
