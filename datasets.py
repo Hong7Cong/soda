@@ -113,9 +113,27 @@ class FundusDataset(Dataset):
         self.train_dir = os.path.join(root, "train")
         self.val_dir = os.path.join(root, "val")
         self.transform = transform
-        self._scan_train_val()
-
-    def _scan_train_val(self):
+        if train:
+            self._scan_train()
+        else:
+            self.scan_val
+            
+    def _scan_val(self):
+        self.file_to_class = {}
+        classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
+        classes = sorted(classes)
+        assert len(classes) == 2  
+        class_to_idx = {classes[i]: i for i in range(len(classes))}
+        self.data = []
+        for fname, class_name in self.file_to_class.items():
+            path = os.path.join(images_dir, class_name, fname)
+            idx = class_to_idx[class_name]
+            item = (path, idx)
+            self.data.append(item)
+            self.file_to_class[fname] = class_name
+        self.labels_dict = {i: classes[i] for i in range(len(classes))}
+        
+    def _scan_train(self):
         classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
         classes = sorted(classes)
         assert len(classes) == 2
