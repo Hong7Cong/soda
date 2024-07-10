@@ -72,7 +72,7 @@ class ResidualBlock(nn.Module):
     
             h = self.conv2(self.act2(h))
             return h + self.shortcut(x)
-         except Exception as e:
+        except Exception as e:
             print(f"Error in ResidualBlock forward: {e}, Input dimensions: x={x.size()}, t={t.size()}, z={z.size()}")
             print(f"z_s shape: {z_s.shape}, z_b shape: {z_b.shape}")
             raise e
