@@ -116,7 +116,7 @@ class FundusDataset(Dataset):
         if train:
             self._scan_train()
         else:
-            self.scan_val
+            self._scan_val()
             
     def _scan_val(self):
         self.file_to_class = {}
