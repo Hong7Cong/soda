@@ -39,7 +39,7 @@ def test(opt):
     print(opt)
     opt = Config(opt)
 
-    num_classes, _, down_train, down_test = get_dataset(name=opt.dataset, root="/kaggle/input/glaucoma-private")
+    num_classes, _, down_train, down_test = get_dataset(name=opt.dataset, root="/content/glaucoma-private")
     knn = KNN(down_train, down_test)
     lp = LinearProbe(down_train, down_test, num_classes)
 
