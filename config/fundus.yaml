@@ -8,7 +8,7 @@ encoder:
   cifar_small_image: True
 
 decoder:
-  image_shape: [3, 32, 32]
+  image_shape: [3, 128, 128]
   n_channels: 128
   ch_mults: [1, 2, 2, 2]
   is_attn: [False, True, False, False]
@@ -24,7 +24,7 @@ diffusion:
   drop_prob: 0.1
 
 # training params
-batch_size: 64
+batch_size: 16
 lrate: 5.0e-5
 lrate_ratio: 2
 optim: 'AdamW'
@@ -33,7 +33,7 @@ optim_args:
   betas: [0.9, 0.95]
 grad_clip_norm: 1
 
-n_epoch: 100
+n_epoch: 60
 warm_epoch: 20
 load_epoch: -1
 ema: 0.9999
