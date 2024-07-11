@@ -108,8 +108,8 @@ class AddGaussianNoise():
 
 class FundusDataset(Dataset):
     def __init__(self, root, train=True, transform=None):
-        if not root.endswith("glaucoma-private"):
-            root = os.path.join(root, "glaucoma-private")
+        if not root.endswith("fundus"):
+            root = os.path.join(root, "fundus")
         self.train_dir = os.path.join(root, "train")
         self.val_dir = os.path.join(root, "val")
         self.transform = transform
@@ -160,7 +160,6 @@ class FundusDataset(Dataset):
         path, label = self.data[idx]
         image = Image.open(path)
         image = image.convert("RGB")
-
         if self.transform:
             image = self.transform(image)
 
