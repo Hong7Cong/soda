@@ -118,7 +118,7 @@ class FundusDataset(Dataset):
         else:
             self._scan_val()
             
-   def _scan_val(self):
+    def _scan_val(self):
         self.file_to_class = {}
         classes = [d.name for d in os.scandir(self.val_dir) if d.is_dir()]
         classes = sorted(classes)
