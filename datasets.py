@@ -120,17 +120,20 @@ class FundusDataset(Dataset):
             
     def _scan_val(self):
         self.file_to_class = {}
-        classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
+        classes = [d.name for d in os.scandir(self.val_dir) if d.is_dir()]
         classes = sorted(classes)
         assert len(classes) == 2  
-        class_to_idx = {classes[i]: i for i in range(len(classes))}
         self.data = []
-        for fname, class_name in self.file_to_class.items():
-            path = os.path.join(self.val_dir, class_name, fname)
-            idx = class_to_idx[class_name]
-            item = (path, idx)
-            self.data.append(item)
-            self.file_to_class[fname] = class_name
+        
+        for idx, name in enumerate(classes):
+            this_dir = os.path.join(self.val_dir, name)
+            for root, _, files in sorted(os.walk(this_dir)):
+                for fname in sorted(files):
+                    if fname.endswith(".jpg"):
+                        path = os.path.join(root, fname)
+                        item = (path, idx)
+                        self.data.append(item)
+                        self.file_to_class[fname] = name
         self.labels_dict = {i: classes[i] for i in range(len(classes))}
         
     def _scan_train(self):
@@ -144,15 +147,10 @@ class FundusDataset(Dataset):
             for root, _, files in sorted(os.walk(this_dir)):
                 for fname in sorted(files):
                     if fname.endswith(".jpg"):
-                        if name == 'glaucoma':
-                            path = os.path.join(root, fname)
-                            item = (path, idx)
-                            self.data.append(item)
-                        # path = os.path.join(root, fname)
-                        # item = (path, idx)
-                        # self.data.append(item)
-        self.labels_dict = {0: 'glaucoma'}
-        # self.labels_dict = {i: classes[i] for i in range(len(classes))}
+                        path = os.path.join(root, fname)
+                        item = (path, idx)
+                        self.data.append(item)
+        self.labels_dict = {i: classes[i] for i in range(len(classes))}
         
     def __len__(self):
         return len(self.data)
@@ -186,7 +184,7 @@ def get_dataset(name='cifar10', root='data'):
         RES = 64
     elif name == 'fundus':
         data_norm = transforms.Normalize([0.4802, 0.4481, 0.3975], [0.2302, 0.2265, 0.2262])
-        NUM_CLASSES = 1
+        NUM_CLASSES = 2
         DATASET = FundusDataset
         RES = 32
     else:

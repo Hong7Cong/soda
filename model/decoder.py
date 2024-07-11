@@ -63,11 +63,13 @@ class ResidualBlock(nn.Module):
             h = self.norm2(self.conv1(self.act1(self.norm1(x))))
 
         # Adaptive Group Normalization
-        t_s, t_b = self.time_emb(t).chunk(2, dim=1)
-        z_s, z_b = self.z_emb(z).chunk(2, dim=1)
-        h = t_s[:, :, None, None] * h + t_b[:, :, None, None]
-        h = z_s[:, :, None, None] * h + z_b[:, :, None, None]
-
+        try:
+            t_s, t_b = self.time_emb(t).chunk(2, dim=1)
+            z_s, z_b = self.z_emb(z).chunk(2, dim=1)
+            h = t_s[:, :, None, None] * h + t_b[:, :, None, None]
+            h = z_s[:, :, None, None] * h + z_b[:, :, None, None]
+        except Exception as e:
+            raise e 
         h = self.conv2(self.act2(h))
         return h + self.shortcut(x)
 
