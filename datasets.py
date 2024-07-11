@@ -136,7 +136,7 @@ class FundusDataset(Dataset):
                         self.file_to_class[fname] = name
         self.labels_dict = {i: classes[i] for i in range(len(classes))}
         
-   def _scan_train(self):
+    def _scan_train(self):
         classes = [d.name for d in os.scandir(self.train_dir) if d.is_dir()]
         classes = sorted(classes)
         assert len(classes) == 2
@@ -151,11 +151,6 @@ class FundusDataset(Dataset):
                         item = (path, idx)
                         self.data.append(item)
         self.labels_dict = {i: classes[i] for i in range(len(classes))}
-                          # if name == 'glaucoma':
-                        #     path = os.path.join(root, fname)
-                        #     item = (path, idx)
-                        #     self.data.append(item)
-        # self.labels_dict = {0: 'glaucoma'}
 
         
     def __len__(self):
