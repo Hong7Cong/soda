@@ -1,2 +1,5 @@
 /data
 /output_cifar10
+*.0
+*.pth
+*.png
