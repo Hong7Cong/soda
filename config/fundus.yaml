@@ -8,7 +8,7 @@ encoder:
   cifar_small_image: True
 
 decoder:
-  image_shape: [3, 16, 16]
+  image_shape: [3, 128, 128]
   n_channels: 128
   ch_mults: [1, 2, 2, 2]
   is_attn: [False, True, False, False]
