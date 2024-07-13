@@ -142,6 +142,10 @@ def train(opt):
             ema.ema_model.eval()
             with torch.no_grad():
                 z_guide = ema.ema_model.encode(source[:opt.n_sample], norm=False, use_amp=use_amp)
+                possible_generate_images = z_guide.shape[0]
+                if opt.n_sample > possible_generate_images:
+                    print(f"Insufficient batch size to generate {opt.n_sample} samples. The number of generated samples is reduced to {possible_generate_images}")
+                    opt.n_sample = possible_generate_images
                 x_gen = ema_sample_method(opt.n_sample, target.shape[1:], z_guide)
             # save an image of currently generated samples (top rows)
             # followed by real images (bottom rows)
