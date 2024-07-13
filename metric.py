@@ -59,10 +59,7 @@ class KNN():
             with torch.no_grad():
                 outputs.append(feat_func(x_batch.cuda()).detach().cpu())
                 
-        if outputs:
-            result = torch.cat(outputs, dim=0).numpy()
-        else:
-            result = np.empty((0,))  
+        result = torch.cat(outputs, dim=0).numpy()
         which_set.set_feature(result)
 
 
