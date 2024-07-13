@@ -38,6 +38,6 @@ warm_epoch: 20
 load_epoch: -1
 ema: 0.9999
 
-n_sample: 30
+n_sample: 32
 save_dir: './output_fundus'
 save_per: 20
