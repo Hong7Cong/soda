@@ -24,7 +24,7 @@ diffusion:
   drop_prob: 0.1
 
 # training params
-batch_size: 128
+batch_size: 4
 lrate: 5.0e-5
 lrate_ratio: 2
 optim: 'AdamW'
@@ -34,10 +34,10 @@ optim_args:
 grad_clip_norm: 1
 
 n_epoch: 300
-warm_epoch: 20
+warm_epoch: 10
 load_epoch: -1
 ema: 0.9999
 
-n_sample: 15
-save_dir: './output_fundus'
-save_per: 20
+n_sample: 16
+save_dir: 'drive/MyDrive/SodaImageGen'
+save_per: 5

@@ -35,6 +35,7 @@ def train(opt):
     if local_rank == 0:
         os.makedirs(model_dir, exist_ok=True)
         os.makedirs(vis_dir, exist_ok=True)
+        os.makedirs(tsbd_dir, exist_ok=True)
 
     device = device = torch.device('cuda:0') #"cuda:%d" % local_rank
     soda = SODA(encoder=Network(**opt.encoder),
